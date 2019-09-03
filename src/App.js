@@ -1,10 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+import logo from './logo.svg'
+import './App.css'
 
 function App() {
+  const { loading, error, data } = useQuery(gql`
+    {
+      pizzaSizes {
+        name
+      }
+    }
+  `)
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>Error...</p>
   return (
     <div className="App">
+      {console.log({ data })}
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -20,7 +32,7 @@ function App() {
         </a>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
