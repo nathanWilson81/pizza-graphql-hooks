@@ -1,11 +1,29 @@
 import { gql } from 'apollo-boost'
 
-export const getPizzaSizesWithPrice = () => gql`
+export const getPizzaSizes = gql`
   {
     currentPizzaSize @client
-    pizzaSizes {
+    __type(name: "PizzaSizes") {
+      enumValues {
+        name
+      }
+    }
+  }
+`
+
+export const getPizzaDataBySize = gql`
+  query($name: PizzaSizes) {
+    pizzaSizeByName(name: $name) {
       name
       basePrice
+      maxToppings
+      toppings {
+        defaultSelected
+        topping {
+          name
+          price
+        }
+      }
     }
   }
 `
