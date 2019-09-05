@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
 import { sum, isEmpty } from 'lodash/fp'
@@ -19,6 +19,7 @@ const ToppingNameAndPrice = styled.div`
 // TODO: Trim total price to 2 digits
 // TODO: Display max toppings in the UI
 // TODO: Handle case where maxToppings is null meaning unlimited
+// TODO: Disable other checkboxes when maxToppings overflows
 
 const PizzaForm = ({ name }) => {
   const [selectedToppings, setSelectedToppings] = useState([])
@@ -27,18 +28,27 @@ const PizzaForm = ({ name }) => {
     variables: { name },
     skip: !name
   })
+  useEffect(() => {
+    if (data && data.pizzaSizeByName) {
+      setSelectedToppings(
+        data.pizzaSizeByName.toppings
+          .filter(t => t.defaultSelected)
+          .map(t => t.topping)
+      )
+    }
+    console.log('effect', { data })
+  }, [cart, data])
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error...</p>
-  console.log({ data, name })
+  console.log({ data, selectedToppings })
   return name ? (
     <div>
       {data.pizzaSizeByName.toppings.map(topping => (
         <ToppingContainer key={topping.topping.name}>
           <input
             type={'checkbox'}
-            preventDefault
             checked={selectedToppings.includes(topping.topping)}
-            onClick={() =>
+            onChange={() =>
               selectedToppings.includes(topping.topping)
                 ? setSelectedToppings(
                     selectedToppings.filter(t => t !== topping.topping)
