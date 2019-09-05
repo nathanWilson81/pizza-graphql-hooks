@@ -4,6 +4,26 @@ import { sum, map, prop, reject, equals } from 'lodash/fp'
 
 const CartItem = styled.div`
   display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+`
+
+const CartItemInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const FullHeightButton = styled.button`
+  height: 100%;
+  margin-left: 1rem;
+`
+
+const ToppingList = styled.div`
+  margin-left: 1rem;
+`
+
+const TitleAndButtonContainer = styled.div`
+  display: flex;
 `
 
 const formatTooltip = toppings => toppings.map(t => t.name).join(', ')
@@ -14,10 +34,17 @@ const Cart = ({ setCart, cart }) => (
   <div>
     {cart.map(c => (
       <CartItem key={c.id}>
-        <div title={formatTooltip(c.toppings)}>
-          {c.size} {c.toppings.length} topping - ${c.price.toFixed(2)}
-        </div>
-        <button onClick={() => setCart(reject(equals(c), cart))}>Remove</button>
+        <CartItemInfo>
+          <TitleAndButtonContainer>
+            <div title={formatTooltip(c.toppings)}>
+              {c.size} {c.toppings.length} topping - ${c.price.toFixed(2)}
+            </div>
+            <FullHeightButton onClick={() => setCart(reject(equals(c), cart))}>
+              Remove
+            </FullHeightButton>
+          </TitleAndButtonContainer>
+          <ToppingList>{formatTooltip(c.toppings)}</ToppingList>
+        </CartItemInfo>
       </CartItem>
     ))}
     <p>Total cart price: ${getCartTotal(cart).toFixed(2)}</p>
