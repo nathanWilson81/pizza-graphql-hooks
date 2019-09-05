@@ -19,7 +19,6 @@ const CartItem = styled.div`
   display: flex;
 `
 
-// TODO: Pad a zero for prices that are things like .1 so it shows .10
 // TODO: Disable other checkboxes when maxToppings overflows
 
 const PizzaForm = ({ name }) => {
@@ -69,7 +68,7 @@ const PizzaForm = ({ name }) => {
           />
           <ToppingNameAndPrice>
             <div>Topping: {topping.topping.name}</div>
-            <div>Price: ${topping.topping.price}</div>
+            <div>Price: ${topping.topping.price.toFixed(2)}</div>
           </ToppingNameAndPrice>
         </ToppingContainer>
       ))}
