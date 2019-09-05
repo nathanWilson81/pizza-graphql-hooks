@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
-import { sum, isEmpty, startCase, isNull } from 'lodash/fp'
+import { sum, isEmpty, startCase, isNull, tail } from 'lodash/fp'
 import { PIZZA_DATA_BY_SIZE } from './queries'
 import Cart from './Cart'
 
@@ -34,6 +34,8 @@ const handleToppingCheckboxClick = ({
     setSelectedToppings(selectedToppings.filter(t => t !== topping))
   } else if (selectedToppings.length < maxToppings || isNull(maxToppings)) {
     setSelectedToppings([...selectedToppings, topping])
+  } else {
+    setSelectedToppings([...tail(selectedToppings), topping])
   }
 }
 
@@ -65,8 +67,6 @@ const setDefaultToppings = (setSelectedToppings, toppings) =>
   setSelectedToppings(
     toppings.filter(t => t.defaultSelected).map(t => t.topping)
   )
-
-// TODO: Disable other checkboxes when maxToppings overflows
 
 const PizzaForm = ({ name }) => {
   const [selectedToppings, setSelectedToppings] = useState([])
