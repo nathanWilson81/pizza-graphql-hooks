@@ -8,8 +8,8 @@ const CartItem = styled.div`
 
 const Cart = ({ setCart, cart }) => (
   <div>
-    {cart.map(c => (
-      <CartItem>
+    {cart.map((c, index) => (
+      <CartItem key={index}>
         <div>
           {c.size} {c.toppings.length} topping - ${c.price.toFixed(2)}
         </div>
