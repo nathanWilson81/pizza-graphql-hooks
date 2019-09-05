@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
-import { sum, isEmpty, startCase, isNull, tail } from 'lodash/fp'
+import {
+  sum,
+  isEmpty,
+  startCase,
+  isNull,
+  tail,
+  reject,
+  equals
+} from 'lodash/fp'
+import uuidv4 from 'uuid/v4'
 import { PIZZA_DATA_BY_SIZE } from './queries'
 import Cart from './Cart'
 
@@ -31,7 +40,7 @@ const handleToppingCheckboxClick = ({
   maxToppings
 }) => {
   if (selectedToppings.includes(topping)) {
-    setSelectedToppings(selectedToppings.filter(t => t !== topping))
+    setSelectedToppings(reject(equals(topping), selectedToppings))
   } else if (selectedToppings.length < maxToppings || isNull(maxToppings)) {
     setSelectedToppings([...selectedToppings, topping])
   } else {
@@ -52,7 +61,8 @@ const handleAddPizzaToCart = ({
     {
       size,
       toppings: selectedToppings,
-      price: basePrice + sum(selectedToppings.map(t => t.price))
+      price: basePrice + sum(selectedToppings.map(t => t.price)),
+      id: uuidv4()
     }
   ])
   setSelectedToppings([])
