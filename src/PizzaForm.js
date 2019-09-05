@@ -32,6 +32,25 @@ const handleToppingCheckboxClick = ({
   }
 }
 
+const handleAddPizzaToCart = ({
+  setCart,
+  cart,
+  size,
+  basePrice,
+  selectedToppings,
+  setSelectedToppings
+}) => {
+  setCart([
+    ...cart,
+    {
+      size,
+      toppings: selectedToppings,
+      price: basePrice + sum(selectedToppings.map(t => t.price))
+    }
+  ])
+  setSelectedToppings([])
+}
+
 // TODO: Disable other checkboxes when maxToppings overflows
 
 const PizzaForm = ({ name }) => {
@@ -89,19 +108,16 @@ const PizzaForm = ({ name }) => {
         ).toFixed(2)}
       </p>
       <button
-        onClick={() => {
-          setCart([
-            ...cart,
-            {
-              size: data.pizzaSizeByName.name,
-              toppings: selectedToppings,
-              price:
-                data.pizzaSizeByName.basePrice +
-                sum(selectedToppings.map(t => t.price))
-            }
-          ])
-          setSelectedToppings([])
-        }}
+        onClick={() =>
+          handleAddPizzaToCart({
+            setCart,
+            cart,
+            size: data.pizzaSizeByName.name,
+            basePrice: data.pizzaSizeByName.basePrice,
+            selectedToppings,
+            setSelectedToppings
+          })
+        }
       >
         Add Pizza to cart
       </button>
