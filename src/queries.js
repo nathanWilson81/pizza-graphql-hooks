@@ -1,8 +1,7 @@
 import { gql } from 'apollo-boost'
 
-export const getPizzaSizes = gql`
+export const PIZZA_SIZE_OPTIONS = gql`
   {
-    currentPizzaSize @client
     __type(name: "PizzaSizes") {
       enumValues {
         name
@@ -11,7 +10,7 @@ export const getPizzaSizes = gql`
   }
 `
 
-export const getPizzaDataBySize = gql`
+export const PIZZA_DATA_BY_SIZE = gql`
   query($name: PizzaSizes) {
     pizzaSizeByName(name: $name) {
       name

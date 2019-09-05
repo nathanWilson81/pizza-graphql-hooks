@@ -1,22 +1,24 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useQuery } from '@apollo/react-hooks'
-import { getPizzaSizes } from './queries'
+import { PIZZA_SIZE_OPTIONS } from './queries'
 import PizzaForm from './PizzaForm'
 
 const App = () => {
-  const { loading, error, data, client } = useQuery(getPizzaSizes)
+  const { loading, error, data } = useQuery(PIZZA_SIZE_OPTIONS)
+  const [currentPizzaSize, setCurrentPizzaSize] = useState('')
+  useEffect(() => {
+    if (data && data.__type) {
+      setCurrentPizzaSize(data.__type.enumValues[0].name)
+    }
+  }, [data])
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error...</p>
-  console.log({ data })
-  // Todo: Handle case where app first loads and currentPizzaSize is empty string
   return (
     <div>
       <div>
         <select
-          value={data.currentPizzaSize}
-          onChange={e =>
-            client.writeData({ data: { currentPizzaSize: e.target.value } })
-          }
+          value={currentPizzaSize}
+          onChange={e => setCurrentPizzaSize(e.target.value)}
         >
           {data.__type.enumValues.map(pizza => (
             <option key={pizza.name} value={pizza.name}>
@@ -25,7 +27,7 @@ const App = () => {
           ))}
         </select>
       </div>
-      <PizzaForm name={data.currentPizzaSize} />
+      <PizzaForm name={currentPizzaSize} />
     </div>
   )
 }

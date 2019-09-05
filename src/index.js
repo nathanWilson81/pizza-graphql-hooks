@@ -9,14 +9,7 @@ import * as serviceWorker from './serviceWorker'
 const cache = new InMemoryCache()
 const client = new ApolloClient({
   uri: 'https://core-graphql.dev.waldo.photos/pizza',
-  cache,
-  resolvers: {}
-})
-
-cache.writeData({
-  data: {
-    currentPizzaSize: ''
-  }
+  cache
 })
 
 const ApolloApp = () => (

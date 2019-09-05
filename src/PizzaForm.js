@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
 import { sum, isEmpty, startCase, isNull } from 'lodash/fp'
-import { getPizzaDataBySize } from './queries'
+import { PIZZA_DATA_BY_SIZE } from './queries'
 
 const ToppingContainer = styled.div`
   display: flex;
@@ -24,7 +24,7 @@ const CartItem = styled.div`
 const PizzaForm = ({ name }) => {
   const [selectedToppings, setSelectedToppings] = useState([])
   const [cart, setCart] = useState([])
-  const { loading, error, data } = useQuery(getPizzaDataBySize, {
+  const { loading, error, data } = useQuery(PIZZA_DATA_BY_SIZE, {
     variables: { name },
     skip: !name
   })
