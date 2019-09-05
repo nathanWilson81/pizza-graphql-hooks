@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
 import { sum, isEmpty, startCase, isNull } from 'lodash/fp'
 import { PIZZA_DATA_BY_SIZE } from './queries'
+import Cart from './Cart'
 
 const ToppingContainer = styled.div`
   display: flex;
@@ -13,10 +14,6 @@ const ToppingContainer = styled.div`
 const ToppingNameAndPrice = styled.div`
   display: flex;
   flex-direction: column;
-`
-
-const CartItem = styled.div`
-  display: flex;
 `
 
 const handleToppingCheckboxClick = ({
@@ -51,35 +48,42 @@ const handleAddPizzaToCart = ({
   setSelectedToppings([])
 }
 
+const formatHeaderText = (name, maxToppings) =>
+  `${startCase(name)} pizza - Maximum Toppings: ${
+    isNull(maxToppings) ? 'Unlimited!' : maxToppings
+  }`
+
+const setDefaultToppings = (setSelectedToppings, toppings) =>
+  setSelectedToppings(
+    toppings.filter(t => t.defaultSelected).map(t => t.topping)
+  )
+
 // TODO: Disable other checkboxes when maxToppings overflows
 
 const PizzaForm = ({ name }) => {
   const [selectedToppings, setSelectedToppings] = useState([])
   const [cart, setCart] = useState([])
-  const { loading, error, data } = useQuery(PIZZA_DATA_BY_SIZE, {
+  const { loading, error, data = {} } = useQuery(PIZZA_DATA_BY_SIZE, {
     variables: { name },
     skip: !name
   })
+  const { pizzaSizeByName = {} } = data
+  const {
+    toppings = [],
+    name: pizzaSize = '',
+    maxToppings = null,
+    basePrice = 0
+  } = pizzaSizeByName
   useEffect(() => {
-    if (data && data.pizzaSizeByName) {
-      setSelectedToppings(
-        data.pizzaSizeByName.toppings
-          .filter(t => t.defaultSelected)
-          .map(t => t.topping)
-      )
+    if (data && pizzaSizeByName) {
+      setDefaultToppings(setSelectedToppings, toppings)
     }
   }, [cart, data])
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error...</p>
   return name ? (
     <div>
-      <h3>
-        {`${startCase(data.pizzaSizeByName.name)} pizza - Maximum Toppings: ${
-          isNull(data.pizzaSizeByName.maxToppings)
-            ? 'Unlimited!'
-            : data.pizzaSizeByName.maxToppings
-        }`}
-      </h3>
+      <h3>{formatHeaderText(pizzaSize, maxToppings)}</h3>
       {data.pizzaSizeByName.toppings.map(topping => (
         <ToppingContainer key={topping.topping.name}>
           <input
@@ -90,30 +94,28 @@ const PizzaForm = ({ name }) => {
                 selectedToppings,
                 topping: topping.topping,
                 setSelectedToppings,
-                maxToppings: data.pizzaSizeByName.maxToppings
+                maxToppings: maxToppings
               })
             }
           />
           <ToppingNameAndPrice>
-            <div>Topping: {topping.topping.name}</div>
-            <div>Price: ${topping.topping.price.toFixed(2)}</div>
+            <div>
+              {topping.topping.name}: ${topping.topping.price.toFixed(2)}
+            </div>
           </ToppingNameAndPrice>
         </ToppingContainer>
       ))}
       <p>
-        Total Price $
-        {(
-          data.pizzaSizeByName.basePrice +
-          sum(selectedToppings.map(t => t.price))
-        ).toFixed(2)}
+        Total Pizza Price $
+        {(basePrice + sum(selectedToppings.map(t => t.price))).toFixed(2)}
       </p>
       <button
         onClick={() =>
           handleAddPizzaToCart({
             setCart,
             cart,
-            size: data.pizzaSizeByName.name,
-            basePrice: data.pizzaSizeByName.basePrice,
+            size: pizzaSize,
+            basePrice,
             selectedToppings,
             setSelectedToppings
           })
@@ -122,19 +124,7 @@ const PizzaForm = ({ name }) => {
         Add Pizza to cart
       </button>
       {!isEmpty(cart) ? (
-        <div>
-          {cart.map(c => (
-            <CartItem>
-              <div>
-                {c.size} {c.toppings.length} topping - ${c.price.toFixed(2)}
-              </div>
-              <button onClick={() => setCart(cart.filter(item => item !== c))}>
-                Remove
-              </button>
-            </CartItem>
-          ))}
-          <p>Total cart price: ${sum(cart.map(c => c.price)).toFixed(2)}</p>
-        </div>
+        <Cart cart={cart} setCart={setCart} />
       ) : (
         <p>Nothing in your cart yet</p>
       )}
