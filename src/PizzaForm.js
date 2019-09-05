@@ -17,7 +17,6 @@ const ToppingNameAndPrice = styled.div`
 
 // TODO: Pad a zero for prices that are things like .1 so it shows .10
 // TODO: Trim total price to 2 digits
-// TODO: Only allow up to the max toppings
 
 const PizzaForm = ({ name }) => {
   const [selectedToppings, setSelectedToppings] = useState([])
@@ -34,13 +33,16 @@ const PizzaForm = ({ name }) => {
         <ToppingContainer key={topping.topping.name}>
           <input
             type={'checkbox'}
+            preventDefault
             checked={selectedToppings.includes(topping.topping)}
             onClick={() =>
               selectedToppings.includes(topping.topping)
                 ? setSelectedToppings(
                     selectedToppings.filter(t => t !== topping.topping)
                   )
-                : setSelectedToppings([...selectedToppings, topping.topping])
+                : selectedToppings.length < data.pizzaSizeByName.maxToppings
+                ? setSelectedToppings([...selectedToppings, topping.topping])
+                : setSelectedToppings(selectedToppings)
             }
           />
           <ToppingNameAndPrice>
