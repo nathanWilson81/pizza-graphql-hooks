@@ -16,6 +16,14 @@ const ToppingNameAndPrice = styled.div`
   flex-direction: column;
 `
 
+const FormAndCartContainer = styled.div`
+  display: flex;
+`
+
+const FullWidthDiv = styled.div`
+  width: 100%;
+`
+
 const handleToppingCheckboxClick = ({
   selectedToppings,
   topping,
@@ -82,53 +90,58 @@ const PizzaForm = ({ name }) => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error...</p>
   return name ? (
-    <div>
-      <h3>{formatHeaderText(pizzaSize, maxToppings)}</h3>
-      {data.pizzaSizeByName.toppings.map(({ topping }) => (
-        <ToppingContainer key={topping.name}>
-          <input
-            type={'checkbox'}
-            checked={selectedToppings.includes(topping)}
-            onChange={() =>
-              handleToppingCheckboxClick({
-                selectedToppings,
-                topping,
-                setSelectedToppings,
-                maxToppings
-              })
-            }
-          />
-          <ToppingNameAndPrice>
-            <div>
-              {topping.name}: ${topping.price.toFixed(2)}
-            </div>
-          </ToppingNameAndPrice>
-        </ToppingContainer>
-      ))}
-      <p>
-        Total Pizza Price $
-        {(basePrice + sum(selectedToppings.map(t => t.price))).toFixed(2)}
-      </p>
-      <button
-        onClick={() =>
-          handleAddPizzaToCart({
-            setCart,
-            cart,
-            size: pizzaSize,
-            basePrice,
-            selectedToppings,
-            setSelectedToppings
-          })
-        }
-      >
-        Add Pizza to cart
-      </button>
-      {!isEmpty(cart) ? (
-        <Cart cart={cart} setCart={setCart} />
-      ) : (
-        <p>Nothing in your cart yet</p>
-      )}
-    </div>
+    <FormAndCartContainer>
+      <FullWidthDiv>
+        <h3>{formatHeaderText(pizzaSize, maxToppings)}</h3>
+        {data.pizzaSizeByName.toppings.map(({ topping }) => (
+          <ToppingContainer key={topping.name}>
+            <input
+              type={'checkbox'}
+              checked={selectedToppings.includes(topping)}
+              onChange={() =>
+                handleToppingCheckboxClick({
+                  selectedToppings,
+                  topping,
+                  setSelectedToppings,
+                  maxToppings
+                })
+              }
+            />
+            <ToppingNameAndPrice>
+              <div>
+                {topping.name}: ${topping.price.toFixed(2)}
+              </div>
+            </ToppingNameAndPrice>
+          </ToppingContainer>
+        ))}
+        <p>
+          Total Pizza Price $
+          {(basePrice + sum(selectedToppings.map(t => t.price))).toFixed(2)}
+        </p>
+        <button
+          onClick={() =>
+            handleAddPizzaToCart({
+              setCart,
+              cart,
+              size: pizzaSize,
+              basePrice,
+              selectedToppings,
+              setSelectedToppings
+            })
+          }
+        >
+          Add Pizza to cart
+        </button>
+      </FullWidthDiv>
+      <FullWidthDiv>
+        <h3>Cart</h3>
+        {!isEmpty(cart) ? (
+          <Cart cart={cart} setCart={setCart} />
+        ) : (
+          <p>Nothing in your cart yet</p>
+        )}
+      </FullWidthDiv>
+    </FormAndCartContainer>
   ) : (
     <p>Please select a pizza size above</p>
   )

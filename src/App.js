@@ -1,7 +1,21 @@
 import React, { useState, useEffect } from 'react'
+import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
 import { PIZZA_SIZE_OPTIONS } from './queries'
 import PizzaForm from './PizzaForm'
+
+const AppContainer = styled.div`
+  padding: 1rem;
+`
+
+const ToppingSelectContainer = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+const ToppingSelectText = styled.h2`
+  margin-right: 1rem;
+`
 
 const App = () => {
   const { loading, error, data } = useQuery(PIZZA_SIZE_OPTIONS)
@@ -14,8 +28,9 @@ const App = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error...</p>
   return (
-    <div>
-      <div>
+    <AppContainer>
+      <ToppingSelectContainer>
+        <ToppingSelectText>Please select your size of pizza</ToppingSelectText>
         <select
           value={currentPizzaSize}
           onChange={e => setCurrentPizzaSize(e.target.value)}
@@ -26,9 +41,9 @@ const App = () => {
             </option>
           ))}
         </select>
-      </div>
+      </ToppingSelectContainer>
       <PizzaForm name={currentPizzaSize} />
-    </div>
+    </AppContainer>
   )
 }
 
