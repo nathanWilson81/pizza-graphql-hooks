@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
-import { sum, isEmpty, startCase } from 'lodash/fp'
+import { sum, isEmpty, startCase, isNull } from 'lodash/fp'
 import { getPizzaDataBySize } from './queries'
 
 const ToppingContainer = styled.div`
@@ -21,7 +21,6 @@ const CartItem = styled.div`
 
 // TODO: Pad a zero for prices that are things like .1 so it shows .10
 // TODO: Trim total price to 2 digits
-// TODO: Handle case where maxToppings is null meaning unlimited
 // TODO: Disable other checkboxes when maxToppings overflows
 
 const PizzaForm = ({ name }) => {
@@ -48,7 +47,9 @@ const PizzaForm = ({ name }) => {
     <div>
       <h3>
         {`${startCase(data.pizzaSizeByName.name)} pizza - Maximum Toppings: ${
-          data.pizzaSizeByName.maxToppings
+          isNull(data.pizzaSizeByName.maxToppings)
+            ? 'Unlimited!'
+            : data.pizzaSizeByName.maxToppings
         }`}
       </h3>
       {data.pizzaSizeByName.toppings.map(topping => (
@@ -61,7 +62,8 @@ const PizzaForm = ({ name }) => {
                 ? setSelectedToppings(
                     selectedToppings.filter(t => t !== topping.topping)
                   )
-                : selectedToppings.length < data.pizzaSizeByName.maxToppings
+                : selectedToppings.length < data.pizzaSizeByName.maxToppings ||
+                  isNull(data.pizzaSizeByName.maxToppings)
                 ? setSelectedToppings([...selectedToppings, topping.topping])
                 : setSelectedToppings(selectedToppings)
             }
