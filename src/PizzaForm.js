@@ -84,23 +84,23 @@ const PizzaForm = ({ name }) => {
   return name ? (
     <div>
       <h3>{formatHeaderText(pizzaSize, maxToppings)}</h3>
-      {data.pizzaSizeByName.toppings.map(topping => (
-        <ToppingContainer key={topping.topping.name}>
+      {data.pizzaSizeByName.toppings.map(({ topping }) => (
+        <ToppingContainer key={topping.name}>
           <input
             type={'checkbox'}
-            checked={selectedToppings.includes(topping.topping)}
+            checked={selectedToppings.includes(topping)}
             onChange={() =>
               handleToppingCheckboxClick({
                 selectedToppings,
-                topping: topping.topping,
+                topping,
                 setSelectedToppings,
-                maxToppings: maxToppings
+                maxToppings
               })
             }
           />
           <ToppingNameAndPrice>
             <div>
-              {topping.topping.name}: ${topping.topping.price.toFixed(2)}
+              {topping.name}: ${topping.price.toFixed(2)}
             </div>
           </ToppingNameAndPrice>
         </ToppingContainer>
