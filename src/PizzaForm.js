@@ -20,7 +20,6 @@ const CartItem = styled.div`
 `
 
 // TODO: Pad a zero for prices that are things like .1 so it shows .10
-// TODO: Trim total price to 2 digits
 // TODO: Disable other checkboxes when maxToppings overflows
 
 const PizzaForm = ({ name }) => {
@@ -76,8 +75,10 @@ const PizzaForm = ({ name }) => {
       ))}
       <p>
         Total Price $
-        {data.pizzaSizeByName.basePrice +
-          sum(selectedToppings.map(t => t.price))}
+        {(
+          data.pizzaSizeByName.basePrice +
+          sum(selectedToppings.map(t => t.price))
+        ).toFixed(2)}
       </p>
       <button
         onClick={() => {
@@ -101,14 +102,14 @@ const PizzaForm = ({ name }) => {
           {cart.map(c => (
             <CartItem>
               <div>
-                {c.size} {c.toppings.length} topping - ${c.price}
+                {c.size} {c.toppings.length} topping - ${c.price.toFixed(2)}
               </div>
               <button onClick={() => setCart(cart.filter(item => item !== c))}>
                 Remove
               </button>
             </CartItem>
           ))}
-          <p>Total cart price: ${sum(cart.map(c => c.price))}</p>
+          <p>Total cart price: ${sum(cart.map(c => c.price)).toFixed(2)}</p>
         </div>
       ) : (
         <p>Nothing in your cart yet</p>
