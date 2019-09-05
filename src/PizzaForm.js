@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
-import { sum, isEmpty } from 'lodash/fp'
+import { sum, isEmpty, startCase } from 'lodash/fp'
 import { getPizzaDataBySize } from './queries'
 
 const ToppingContainer = styled.div`
@@ -15,9 +15,12 @@ const ToppingNameAndPrice = styled.div`
   flex-direction: column;
 `
 
+const CartItem = styled.div`
+  display: flex;
+`
+
 // TODO: Pad a zero for prices that are things like .1 so it shows .10
 // TODO: Trim total price to 2 digits
-// TODO: Display max toppings in the UI
 // TODO: Handle case where maxToppings is null meaning unlimited
 // TODO: Disable other checkboxes when maxToppings overflows
 
@@ -43,6 +46,11 @@ const PizzaForm = ({ name }) => {
   console.log({ data, selectedToppings })
   return name ? (
     <div>
+      <h3>
+        {`${startCase(data.pizzaSizeByName.name)} pizza - Maximum Toppings: ${
+          data.pizzaSizeByName.maxToppings
+        }`}
+      </h3>
       {data.pizzaSizeByName.toppings.map(topping => (
         <ToppingContainer key={topping.topping.name}>
           <input
@@ -87,11 +95,19 @@ const PizzaForm = ({ name }) => {
         Add Pizza to cart
       </button>
       {!isEmpty(cart) ? (
-        cart.map(c => (
-          <p>
-            {c.size} - {c.price}
-          </p>
-        ))
+        <div>
+          {cart.map(c => (
+            <CartItem>
+              <div>
+                {c.size} {c.toppings.length} topping - ${c.price}
+              </div>
+              <button onClick={() => setCart(cart.filter(item => item !== c))}>
+                Remove
+              </button>
+            </CartItem>
+          ))}
+          <p>Total cart price: ${sum(cart.map(c => c.price))}</p>
+        </div>
       ) : (
         <p>Nothing in your cart yet</p>
       )}
