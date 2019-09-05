@@ -19,6 +19,19 @@ const CartItem = styled.div`
   display: flex;
 `
 
+const handleToppingCheckboxClick = ({
+  selectedToppings,
+  topping,
+  setSelectedToppings,
+  maxToppings
+}) => {
+  if (selectedToppings.includes(topping)) {
+    setSelectedToppings(selectedToppings.filter(t => t !== topping))
+  } else if (selectedToppings.length < maxToppings || isNull(maxToppings)) {
+    setSelectedToppings([...selectedToppings, topping])
+  }
+}
+
 // TODO: Disable other checkboxes when maxToppings overflows
 
 const PizzaForm = ({ name }) => {
@@ -36,11 +49,9 @@ const PizzaForm = ({ name }) => {
           .map(t => t.topping)
       )
     }
-    console.log('effect', { data })
   }, [cart, data])
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error...</p>
-  console.log({ data, selectedToppings })
   return name ? (
     <div>
       <h3>
@@ -56,14 +67,12 @@ const PizzaForm = ({ name }) => {
             type={'checkbox'}
             checked={selectedToppings.includes(topping.topping)}
             onChange={() =>
-              selectedToppings.includes(topping.topping)
-                ? setSelectedToppings(
-                    selectedToppings.filter(t => t !== topping.topping)
-                  )
-                : selectedToppings.length < data.pizzaSizeByName.maxToppings ||
-                  isNull(data.pizzaSizeByName.maxToppings)
-                ? setSelectedToppings([...selectedToppings, topping.topping])
-                : setSelectedToppings(selectedToppings)
+              handleToppingCheckboxClick({
+                selectedToppings,
+                topping: topping.topping,
+                setSelectedToppings,
+                maxToppings: data.pizzaSizeByName.maxToppings
+              })
             }
           />
           <ToppingNameAndPrice>
