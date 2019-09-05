@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
-import { sum } from 'lodash/fp'
+import { sum, isEmpty } from 'lodash/fp'
 import { getPizzaDataBySize } from './queries'
 
 const ToppingContainer = styled.div`
@@ -17,9 +17,12 @@ const ToppingNameAndPrice = styled.div`
 
 // TODO: Pad a zero for prices that are things like .1 so it shows .10
 // TODO: Trim total price to 2 digits
+// TODO: Display max toppings in the UI
+// TODO: Handle case where maxToppings is null meaning unlimited
 
 const PizzaForm = ({ name }) => {
   const [selectedToppings, setSelectedToppings] = useState([])
+  const [cart, setCart] = useState([])
   const { loading, error, data } = useQuery(getPizzaDataBySize, {
     variables: { name },
     skip: !name
@@ -56,6 +59,32 @@ const PizzaForm = ({ name }) => {
         {data.pizzaSizeByName.basePrice +
           sum(selectedToppings.map(t => t.price))}
       </p>
+      <button
+        onClick={() => {
+          setCart([
+            ...cart,
+            {
+              size: data.pizzaSizeByName.name,
+              toppings: selectedToppings,
+              price:
+                data.pizzaSizeByName.basePrice +
+                sum(selectedToppings.map(t => t.price))
+            }
+          ])
+          setSelectedToppings([])
+        }}
+      >
+        Add Pizza to cart
+      </button>
+      {!isEmpty(cart) ? (
+        cart.map(c => (
+          <p>
+            {c.size} - {c.price}
+          </p>
+        ))
+      ) : (
+        <p>Nothing in your cart yet</p>
+      )}
     </div>
   ) : (
     <p>Please select a pizza size above</p>
